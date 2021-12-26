@@ -14,6 +14,12 @@ body, html {
 .h-90 {
   height: 90%!important;
 }
+.h-85 {
+  height: 85%!important;
+}
+.h-15 {
+  height: 15%!important;
+}
 
 .h-10{
   height: 10%!important;
