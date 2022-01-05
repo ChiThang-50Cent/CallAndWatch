@@ -14,6 +14,10 @@ body, html {
 .h-90 {
   height: 90%!important;
 }
+.h-10{
+  height: 10%!important;
+}
+
 .h-85 {
   height: 85%!important;
 }
@@ -21,8 +25,11 @@ body, html {
   height: 15%!important;
 }
 
-.h-10{
-  height: 10%!important;
+.w-85 {
+  width: 85%!important;
+}
+.w-15 {
+  width: 15%!important;
 }
 
 code {

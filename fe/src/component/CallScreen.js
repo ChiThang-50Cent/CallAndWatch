@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import CallElement from './CallElement'
 
 export default function CallScreen() {
-    const userCall = [1, 2, 3, 4]
-    const [isFilmSrcOn, setIsFilmSrcOn] = useState(false)
-
-    useEffect(() => {
-        const gutter = document.getElementById('callScreen').classList.contains('h-15')
-        setIsFilmSrcOn(gutter)
-    }, [])
+    const userCall = [1]
 
     if (userCall.length === 1) {
         return (
@@ -23,14 +17,14 @@ export default function CallScreen() {
 
         for (let i = 0; i < 4; i++) {
             suc.push(
-                <div className={`col-6 h-50 w-50`}>
+                <div className={`h-25`}>
                     <CallElement />
                 </div>)
         }
 
         return (
-            <div className='h-100 w-100 justify-content-center align-items-center'>
-                <div className={`row g-2 h-100 w-100`}>
+            <div className='d-flex h-100 w-100 justify-content-center align-items-center'>
+                <div className={`h-100 w-100`}>
                     {suc}
                 </div>
             </div>
