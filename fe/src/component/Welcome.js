@@ -39,7 +39,7 @@ export default function Welcome() {
   return (
     <div className="container">
       <div className="imgMAc">
-        <img className="img" src="mac.jpg" />
+        <img className="img" src="imgMAC.jpg" />
       </div>
       <div className="conten">
         <input placeholder="Enter name" id="inputUsername" />
