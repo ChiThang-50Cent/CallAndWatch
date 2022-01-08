@@ -37,16 +37,16 @@ export default function Welcome() {
   }, [navigate]);
 
   return (
-    <div className="container">
-      <div className="imgMAc">
-        <img className="img" src="imgMAC.jpg" />
+    <div className="wel-container">
+      <div className="wel-imgMAc">
+        <img className="wel-img" src="imgMAC.jpg" />
       </div>
-      <div className="conten">
-        <input placeholder="Enter name" id="inputUsername" />
-        <button className="top left" onClick={handleCreate}>Create</button>
+      <div className="wel-content">
+        <input placeholder="Enter name" id="inputUsername" className="wel-input" />
+        <button className="wel-top wel-left wel-button" onClick={handleCreate}>Create</button>
         <br />
-        <input className="top" placeholder="Enter room code" id="inputRoomCode" />
-        <button className="top left" onClick={handleJoin}>Join</button>
+        <input className="wel-top wel-input" placeholder="Enter room code" id="inputRoomCode" />
+        <button className="wel-top wel-left wel-button" onClick={handleJoin}>Join</button>
       </div>
     </div>
   );

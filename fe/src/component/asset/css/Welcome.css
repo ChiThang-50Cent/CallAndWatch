@@ -2,25 +2,24 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background: black;
 }
-.container{
+.wel-container{
      display: flex;
      flex-direction: row;
  }
-.imgMAC{
+.wel-imgMAC{
     width: 50%;
 }
-.img{
+.wel-img{
      width:100%;
  }
-.conten{
+.wel-content{
     width: 40%;
     height:100%;
     margin-top: 20%;
     margin-left: 13%;
 }
-input{
+.wel-input{
     width: 25rem;
     height: 2.7rem;
     padding-left: 15px;
@@ -30,7 +29,7 @@ input{
     background-color: white;
     box-shadow: 5px 5px 5px red;
 }
-button{
+.wel-button{
     margin-top: 2rem;
     height: 45px;
     width: 15rem;
@@ -40,9 +39,9 @@ button{
     outline: none;
     border-radius: 10px;
 }
-.top{
+.wel-top{
     margin-top: 1.5rem;
 }
-.left{
+.wel-left{
     margin-left: 5rem;
 }
