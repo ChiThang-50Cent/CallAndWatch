@@ -79,6 +79,12 @@ export default function CallScreen() {
       callEles.push(<CallElement videoId={`remotePlayer-${parti}`} key={parti} />);
     }
   });
+
+  let col = 0; //Có 2  người tham gia
+  if(participant.length >= 3){
+    col = 1;
+  }
+
   return (
     <>
       <Modal show={showModal} onHide={handleClose}>
@@ -93,7 +99,7 @@ export default function CallScreen() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div>
+      <div className = {`d-flex justify-content-center align-item-center ${col === 0 ? "flex-row" : "flex-col"}`}>
         <CallElement videoId={"userPlayer"} />
         {callEles}
       </div>
