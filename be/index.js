@@ -1,12 +1,13 @@
 const express  = require('express')
-const app = express()
 const http = require('http')
-const server = http.createServer(app)
+const YoutubeAPI = require('./api/youtubeApi')
 const callSocketIo = require('./socket.io/call.socket')
+const app = express()
+const server = http.createServer(app)
 
-app.get('/', (req, res)=>{
-    res.send("Helloooo")
-})
+app.use(express.json())
+app.use('/search', YoutubeAPI)
+
 
 callSocketIo(server)
 
