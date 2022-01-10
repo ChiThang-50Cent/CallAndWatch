@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Navigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import Peer from "peerjs";
 import CallElement from "./CallElement";
@@ -12,38 +12,44 @@ export default function CallScreen() {
   const { room } = useParams();
 
   const [showModal, setShowModal] = useState(false);
+  const [canCall, setCanCall] = useState(true);
   const [requestor, setRequestor] = useState("");
-  const [thisPeerId, setThisPeerId] = useState("")
+  const [thisPeerId, setThisPeerId] = useState("");
   const [participant, setParticipant] = useState([]);
 
   useEffect(() => {
     if (!localStorage.getItem("user")) {
       navigate("/");
     } else {
-      peer.on("open", () => {
-        console.log(peer.id);
-        setThisPeerId(peer.id)  
-        socket.emit("JOIN_ROOM", {
-          roomId: room,
-          peerId: peer.id,
-        });
+      callFunc.openStream().then((stream) => {
+        if (stream) {
+          peer.on("open", () => {
+            console.log(peer.id);
+            setThisPeerId(peer.id);
+            socket.emit("JOIN_ROOM", {
+              roomId: room,
+              peerId: peer.id,
+            });
+          });
+
+          callFunc.playedStream("userPlayer", stream);
+          socket.on("FETCH_ROOM_MEMBERS", (members) => {
+            setParticipant([...members]);
+            members.forEach((peerId) => {
+              if (peerId !== peer.id) {
+                console.log("joiner", peerId);
+                let call = peer.call(peerId, stream);
+                call.on("stream", (remoteStream) => {
+                  callFunc.playedStream(`remotePlayer-${peerId}`, remoteStream);
+                });
+              }
+            });
+          });
+        } else {
+          navigate("/");
+        }
       });
 
-      callFunc.openStream().then((stream) => {
-        callFunc.playedStream("userPlayer", stream);
-        socket.on("FETCH_ROOM_MEMBERS", (members) => {
-          setParticipant([...members]);
-          members.forEach((peerId) => {
-            if (peerId !== peer.id) {
-              console.log("joiner", peerId);
-              let call = peer.call(peerId, stream);
-              call.on("stream", (remoteStream) => {
-                callFunc.playedStream(`remotePlayer-${peerId}`, remoteStream);
-              });
-            }
-          });
-        });
-      });
       peer.on("call", (call) => {
         callFunc.openStream().then((stream) => {
           call.answer(stream);
@@ -53,7 +59,6 @@ export default function CallScreen() {
           });
         });
       });
-      console.log("UseEffect run without cam")
       socket.on("ALERT_NEW_USER_RESQUEST", (user) => {
         setShowModal(true);
         setRequestor(user);
@@ -76,14 +81,11 @@ export default function CallScreen() {
   let callEles = [];
   participant.forEach((parti) => {
     if (parti !== thisPeerId) {
-      callEles.push(<CallElement videoId={`remotePlayer-${parti}`} key={parti} />);
+      callEles.push(
+        <CallElement videoId={`remotePlayer-${parti}`} key={parti} />
+      );
     }
   });
-
-  let col = 0; //Có 2  người tham gia
-  if(participant.length >= 3){
-    col = 1;
-  }
 
   return (
     <>
@@ -99,7 +101,7 @@ export default function CallScreen() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div className = {`d-flex justify-content-center align-item-center ${col === 0 ? "flex-row" : "flex-col"}`}>
+      <div className={`d-flex justify-content-center align-item-center`}>
         <CallElement videoId={"userPlayer"} />
         {callEles}
       </div>
