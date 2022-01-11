@@ -10,47 +10,58 @@ const callSocketIo = (server) => {
   });
 
   io.on("connection", (socket) => {
-
-    socket.on("NEW_USER_REQUEST", (user) => {
-      const room = rooms.find(room => room.roomId === user.requestRoom)
-      socket.to(room.id).emit("ALERT_NEW_USER_RESQUEST", user)
-      
-      console.log('request', user)
-      
-    });
-
     socket.on("CREATE_NEW_ROOM", (room) => {
       rooms.push({
         id: socket.id,
         creator: room.username,
         roomId: room.id,
-        members : []
+        members: [],
       });
     });
 
-    socket.on("ACCEPT_NEW_USER", (user)=>{
+    socket.on("NEW_USER_REQUEST", (user) => {
+      const room = rooms.find((room) => room.roomId === user.requestRoom);
+      socket.to(room.id).emit("ALERT_NEW_USER_RESQUEST", user);
       
-      socket.to(user.id).emit("RESPONE_NEW_USER_REQUEST", ({
-        roomId : user.requestRoom,
-        name : user.username,
-        isAllow : true
-      }))
+      console.log("request", user);
     });
-    socket.on("DECLINE_NEW_USER", (user)=>{
-      socket.to(user.id).emit("RESPONE_NEW_USER_REQUEST", ({
-        roomId : user.requestRoom,
-        name : user.username,
-        isAllow : false
-      }))
+
+    socket.on("ACCEPT_NEW_USER", (user) => {
+      socket.to(user.id).emit("RESPONE_NEW_USER_REQUEST", {
+        roomId: user.requestRoom,
+        name: user.username,
+        isAllow: true,
+      });
     });
-    socket.on("JOIN_ROOM", (data)=>{
-      socket.join(data.roomId)
-      rooms.forEach(room => {
-        if(room.roomId === data.roomId){
-          room.members.push(data.peerId)
-          io.to(data.roomId).emit("FETCH_ROOM_MEMBERS", room.members)
+
+    socket.on("DECLINE_NEW_USER", (user) => {
+      socket.to(user.id).emit("RESPONE_NEW_USER_REQUEST", {
+        roomId: user.requestRoom,
+        name: user.username,
+        isAllow: false,
+      });
+    });
+
+    socket.on("JOIN_ROOM", (data) => {
+      socket.join(data.roomId);
+      socket.roomId = data.roomId
+      rooms.forEach((room) => {
+        if (room.roomId === data.roomId) {
+          room.members.push({
+            peerId : data.peerId,
+            socketId : data.socketId
+          });
+          io.to(data.roomId).emit("FETCH_ROOM_MEMBERS", room.members);
         }
-      })
+      });
+    });
+
+    socket.on("disconnect", ()=>{
+      //console.log("dis", socket.roomId)
+      const room = rooms.find((room) => room.roomId === socket.roomId);
+      const index = room.members.findIndex(user=>user.socketId === socket.id)
+      room.members.splice(index, 1)
+      io.to(socket.roomId).emit("FETCH_ROOM_MEMBERS", room.members)
     })
   });
 };

@@ -12,7 +12,6 @@ export default function CallScreen() {
   const { room } = useParams();
 
   const [showModal, setShowModal] = useState(false);
-  const [canCall, setCanCall] = useState(true);
   const [requestor, setRequestor] = useState("");
   const [thisPeerId, setThisPeerId] = useState("");
   const [participant, setParticipant] = useState([]);
@@ -21,48 +20,67 @@ export default function CallScreen() {
     if (!localStorage.getItem("user")) {
       navigate("/");
     } else {
-      callFunc.openStream().then((stream) => {
-        if (stream) {
-          peer.on("open", () => {
-            console.log(peer.id);
-            setThisPeerId(peer.id);
-            socket.emit("JOIN_ROOM", {
-              roomId: room,
-              peerId: peer.id,
-            });
-          });
+      (async () => {
+        peer.on("open", () => {
+          console.log(peer.id);
+          setThisPeerId(peer.id);
+        });
 
-          callFunc.playedStream("userPlayer", stream);
-          socket.on("FETCH_ROOM_MEMBERS", (members) => {
-            setParticipant([...members]);
-            members.forEach((peerId) => {
-              if (peerId !== peer.id) {
-                console.log("joiner", peerId);
-                let call = peer.call(peerId, stream);
-                call.on("stream", (remoteStream) => {
-                  callFunc.playedStream(`remotePlayer-${peerId}`, remoteStream);
-                });
-              }
-            });
-          });
-        } else {
-          navigate("/");
-        }
-      });
+        // socket.emit("NEW_USER_REQUEST", {
+        //   username: localStorage.getItem('user'),
+        //   id: socket.id,
+        //   requestRoom: room,
+        // });
 
-      peer.on("call", (call) => {
-        callFunc.openStream().then((stream) => {
-          call.answer(stream);
-          callFunc.playedStream("userPlayer", stream);
-          call.on("stream", (remoteStream) => {
-            callFunc.playedStream("remotePlayer", remoteStream);
+        // socket.on("RESPONE_NEW_USER_REQUEST", (res) => {
+        //   if (!res.isAllow) {
+        //     navigate("/");
+        //   }
+        // });
+
+        const stream = await callFunc.openStream();
+
+        callFunc.playedStream("userPlayer", stream);
+
+        socket.emit("JOIN_ROOM", {
+          roomId: room,
+          peerId: peer.id,
+          socketId: socket.id,
+        });
+
+        socket.on("FETCH_ROOM_MEMBERS", (members) => {
+          setParticipant([...members]);
+          members.forEach((mem) => {
+            if (mem.peerId !== peer.id) {
+              console.log("joiner", mem.peerId);
+              let call = peer.call(mem.peerId, stream);
+              call.on("stream", (remoteStream) => {
+                callFunc.playedStream(
+                  `remotePlayer-${mem.peerId}`,
+                  remoteStream
+                );
+              });
+            }
           });
         });
-      });
-      socket.on("ALERT_NEW_USER_RESQUEST", (user) => {
-        setShowModal(true);
-        setRequestor(user);
-      });
+
+        //Listen to a  call and answer, sending stream
+        peer.on("call", (call) => {
+          callFunc.openStream().then((stream) => {
+            call.answer(stream);
+            callFunc.playedStream("userPlayer", stream);
+            call.on("stream", (remoteStream) => {
+              callFunc.playedStream("remotePlayer", remoteStream);
+            });
+          });
+        });
+
+        //New user request
+        socket.on("ALERT_NEW_USER_RESQUEST", (user) => {
+          setShowModal(true);
+          setRequestor(user);
+        });
+      })();
     }
   }, []);
 
@@ -80,9 +98,12 @@ export default function CallScreen() {
 
   let callEles = [];
   participant.forEach((parti) => {
-    if (parti !== thisPeerId) {
+    if (parti.peerId !== thisPeerId  && parti.peerId !== null) {
       callEles.push(
-        <CallElement videoId={`remotePlayer-${parti}`} key={parti} />
+        <CallElement
+          videoId={`remotePlayer-${parti.peerId}`}
+          key={parti.peerId}
+        />
       );
     }
   });
