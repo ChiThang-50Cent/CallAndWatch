@@ -1,7 +1,7 @@
-
 .wel-container{
      display: flex;
      flex-direction: row;
+     background-color: black;
  }
 .wel-imgMAC{
     width: 50%;
