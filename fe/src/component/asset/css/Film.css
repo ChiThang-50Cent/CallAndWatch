@@ -1,0 +1,19 @@
+iframe{
+    height: 100%;
+    width: 100%;
+}
+
+#searchResults::-webkit-scrollbar {
+    width: 6px;
+    background-color: #F5F5F5;
+}
+
+#searchResults::-webkit-scrollbar-thumb {
+    background-color: #505050;
+    border-radius: 50px;
+}
+
+#searchResults::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(41, 40, 40, 0.3);
+    background-color: #F5F5F5;
+}

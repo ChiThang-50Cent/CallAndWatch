@@ -10,6 +10,7 @@ body, html {
   -moz-osx-font-smoothing: grayscale;
   background: black;
 }
+
 #root {
   height: 100%;
 }
@@ -20,14 +21,30 @@ body, html {
 .h-10{
   height: 10%!important;
 }
-
+.h-95 {
+  height: 95%!important;
+}
+.h-5{
+  height: 5%!important;
+}
 .h-85 {
   height: 85%!important;
 }
 .h-15 {
   height: 15%!important;
 }
-
+.h-75 {
+  height: 75%!important;
+}
+.h-25 {
+  height: 25%!important;
+}
+.h-60 {
+  height: 60%!important;
+}
+.h-40 {
+  height: 40%!important;
+}
 .w-85 {
   width: 85%!important;
 }

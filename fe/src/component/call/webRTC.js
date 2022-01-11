@@ -1,7 +1,10 @@
 const callFunc = {};
 
 callFunc.openStream = async () => {
-  const config = { audio: false, video: true };
+  const config = { 
+    audio: false, 
+    video: true
+  };
   let stream = null;
   try{
     stream = await navigator.mediaDevices.getUserMedia(config);

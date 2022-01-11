@@ -27,8 +27,8 @@ export default function MainScreen() {
                     <div id="filmScreen" className="d-none h-100">
                         <div className='h-100'><FilmScreen /></div>
                     </div>
-                    <div id="musicScreen" >
-                        <div className='d-none'><MusicScreen /></div>
+                    <div id="musicScreen" className='d-none' >
+                        <div ><MusicScreen /></div>
                     </div>
                 </div>
                 <div className='d-flex h-10 justify-content-center align-items-center'>
