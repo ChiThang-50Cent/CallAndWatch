@@ -37,16 +37,33 @@ export default function Welcome() {
   }, [navigate]);
 
   return (
-    <div className="wel-container">
-      <div className="wel-imgMAc">
-        <img className="wel-img" src="imgMAC.jpg" />
-      </div>
-      <div className="wel-content">
-        <input placeholder="Enter name" id="inputUsername" className="wel-input" />
-        <button className="wel-top wel-left wel-button" onClick={handleCreate}>Create</button>
-        <br />
-        <input className="wel-top wel-input" placeholder="Enter room code" id="inputRoomCode" />
-        <button className="wel-top wel-left wel-button" onClick={handleJoin}>Join</button>
+    <div>
+      <div className="wel-container">
+        <div className="wel-imgMAc">
+          <img className="wel-img" src="imgMAC.jpg" />
+        </div>
+        <div className="wel-content">
+          <input
+            placeholder="Enter name"
+            id="inputUsername"
+            className="wel-input"
+          />
+          <button
+            className="wel-top wel-left wel-button"
+            onClick={handleCreate}
+          >
+            Create
+          </button>
+          <br />
+          <input
+            className="wel-top wel-input"
+            placeholder="Enter room code"
+            id="inputRoomCode"
+          />
+          <button className="wel-top wel-left wel-button" onClick={handleJoin}>
+            Join
+          </button>
+        </div>
       </div>
     </div>
   );

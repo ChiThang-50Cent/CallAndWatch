@@ -1,7 +1,6 @@
 {
-  "name": "be",
+  "name": "y",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
@@ -16,5 +15,7 @@
     "express": "^4.17.2",
     "nodemon": "^2.0.15",
     "socket.io": "^4.4.0"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }
