@@ -2,12 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import FilmElement from "./FilmElement";
 import { Offcanvas, Button } from "react-bootstrap";
 import "./asset/css/Film.css";
+import socket from "./socketio";
 
 export default function FilmScreen() {
   const [listVideo, setListVideo] = useState([]);
   const [show, setShow] = useState(false);
 
   let func = useRef({});
+  let results;
+  let isHost = localStorage.getItem("host") === socket.id;
+  
   useEffect(() => {
     if (!window.YT) {
       var tag = document.createElement("script");
@@ -33,16 +37,25 @@ export default function FilmScreen() {
         },
       });
     } else {
-      func.current.loadVideoById(videoId);
+      func.current.loadVideoById(videoId, 0);
     }
   };
 
   const onPlayerReady = (event) => {
-    event.target.playVideo();
-    function loadVideoById(videoId) {
-      event.target.loadVideoById({
+    let player = event.target;
+    player.playVideo();
+    if (isHost) {
+      console.log("Host here");
+    }
+    // setInterval(() => {
+    // //   console.log(event.target.getCurrentTime());
+    // //   console.log(event.target)
+
+    // }, 2000);
+    function loadVideoById(videoId, startTime) {
+      player.loadVideoById({
         videoId: videoId,
-        startSeconds: 0,
+        startSeconds: startTime,
       });
     }
     func.current.loadVideoById = loadVideoById;
@@ -66,7 +79,7 @@ export default function FilmScreen() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  let results = listVideo.map((vid) => {
+  results = listVideo.map((vid) => {
     return (
       <FilmElement
         data={vid.snippet}

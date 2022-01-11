@@ -22,7 +22,7 @@ const callSocketIo = (server) => {
     socket.on("NEW_USER_REQUEST", (user) => {
       const room = rooms.find((room) => room.roomId === user.requestRoom);
       socket.to(room.id).emit("ALERT_NEW_USER_RESQUEST", user);
-      
+
       console.log("request", user);
     });
 
@@ -44,25 +44,47 @@ const callSocketIo = (server) => {
 
     socket.on("JOIN_ROOM", (data) => {
       socket.join(data.roomId);
-      socket.roomId = data.roomId
+      socket.roomId = data.roomId;
       rooms.forEach((room) => {
         if (room.roomId === data.roomId) {
           room.members.push({
-            peerId : data.peerId,
-            socketId : data.socketId
+            peerId: data.peerId,
+            socketId: data.socketId,
           });
           io.to(data.roomId).emit("FETCH_ROOM_MEMBERS", room.members);
         }
       });
+
+      socket.on("FETCH_ROOM_DATA", () => {
+        try {
+          const room = rooms.find((room) => room.roomId === socket.roomId);
+          const joiner = room.members[0];
+          socket.emit("RESPONE_ROOM_DATA", joiner.socketId);
+        } catch (error) {
+          console.log(error.message);
+        }
+      });
     });
 
-    socket.on("disconnect", ()=>{
+    socket.on("disconnect", () => {
       //console.log("dis", socket.roomId)
-      const room = rooms.find((room) => room.roomId === socket.roomId);
-      const index = room.members.findIndex(user=>user.socketId === socket.id)
-      room.members.splice(index, 1)
-      io.to(socket.roomId).emit("FETCH_ROOM_MEMBERS", room.members)
-    })
+      try {
+        const room = rooms.find((room) => room.roomId === socket.roomId);
+        const index = room.members.findIndex(
+          (user) => user.socketId === socket.id
+        );
+        room.members.splice(index, 1);
+        io.to(socket.roomId).emit("FETCH_ROOM_MEMBERS", room.members);
+        if (room.members.length) {
+          io.to(socket.roomId).emit(
+            "RESPONE_ROOM_DATA",
+            room.members[0].socketId
+          );
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    });
   });
 };
 

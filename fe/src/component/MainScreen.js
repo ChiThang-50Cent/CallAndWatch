@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { Row } from 'react-bootstrap'
+import React from 'react'
 import CallScreen from './CallScreen'
 import FilmScreen from './FilmScreen'
 import MusicScreen from './MusicScreen'
 export default function MainScreen() {
-    const { room } = useParams()
 
     const clickFilmbtn = () => {
         let callNode = document.getElementById('callScreen').classList

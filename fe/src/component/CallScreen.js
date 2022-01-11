@@ -48,6 +48,11 @@ export default function CallScreen() {
           socketId: socket.id,
         });
 
+        socket.emit("FETCH_ROOM_DATA", {})
+        socket.on("RESPONE_ROOM_DATA", (room)=>{
+            localStorage.setItem("host", room)
+        })
+
         socket.on("FETCH_ROOM_MEMBERS", (members) => {
           setParticipant([...members]);
           members.forEach((mem) => {

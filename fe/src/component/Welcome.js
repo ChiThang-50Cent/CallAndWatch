@@ -9,22 +9,26 @@ export default function Welcome() {
   const handleCreate = () => {
     const roomId = nanoid(9);
     const name = document.getElementById("inputUsername").value;
-    localStorage.setItem("user", name);
-    socket.emit("CREATE_NEW_ROOM", {
-      username: name,
-      id: roomId,
-    });
-    navigate(roomId);
+    if (name) {
+      localStorage.setItem("user", name);
+      socket.emit("CREATE_NEW_ROOM", {
+        username: name,
+        id: roomId,
+      });
+      navigate(roomId);
+    }
   };
 
   const handleJoin = () => {
     const roomId = document.getElementById("inputRoomCode").value;
     const name = document.getElementById("inputUsername").value;
-    socket.emit("NEW_USER_REQUEST", {
-      username: name,
-      id: socket.id,
-      requestRoom: roomId,
-    });
+    if (name && roomId) {
+      socket.emit("NEW_USER_REQUEST", {
+        username: name,
+        id: socket.id,
+        requestRoom: roomId,
+      });
+    }
   };
 
   useEffect(() => {
@@ -42,11 +46,23 @@ export default function Welcome() {
         <img className="wel-img" src="imgMAC.jpg" />
       </div>
       <div className="wel-content">
-        <input placeholder="Enter name" id="inputUsername" className="wel-input" />
-        <button className="wel-top wel-left wel-button" onClick={handleCreate}>Create</button>
+        <input
+          placeholder="Enter name"
+          id="inputUsername"
+          className="wel-input"
+        />
+        <button className="wel-top wel-left wel-button" onClick={handleCreate}>
+          Create
+        </button>
         <br />
-        <input className="wel-top wel-input" placeholder="Enter room code" id="inputRoomCode" />
-        <button className="wel-top wel-left wel-button" onClick={handleJoin}>Join</button>
+        <input
+          className="wel-top wel-input"
+          placeholder="Enter room code"
+          id="inputRoomCode"
+        />
+        <button className="wel-top wel-left wel-button" onClick={handleJoin}>
+          Join
+        </button>
       </div>
     </div>
   );
