@@ -6,8 +6,7 @@ import CallElement from "./CallElement";
 import callFunc from "./call/webRTC";
 import socket from "./socketio";
 
-
-export default function CallScreen() {
+export default function CallScreen(props) {
   const navigate = useNavigate();
   const peer = new Peer();
   const { room } = useParams();
@@ -16,6 +15,10 @@ export default function CallScreen() {
   const [requestor, setRequestor] = useState("");
   const [thisPeerId, setThisPeerId] = useState("");
   const [participant, setParticipant] = useState([]);
+  const [size, setSize] = useState({
+    height: 0.85,
+    width: 0.75,
+  });
 
   const streamRef = useRef(null);
 
@@ -24,60 +27,88 @@ export default function CallScreen() {
       navigate("/");
     } else {
       (async () => {
-        peer.on("open", async () => {
-          console.log(peer.id);
-          streamRef.current = await callFunc.openStream();
-          callFunc.playedStream("userPlayer", streamRef.current);
+        if (thisPeerId === "") {
+          peer.on("open", async () => {
+            console.log("peerid:", peer.id);
+            setThisPeerId(peer.id);
 
-          socket.emit("JOIN_ROOM", {
-            roomId: room,
-            peerId: peer.id,
-            socketId: socket.id,
-            name : localStorage.getItem("user")
-          });
+            streamRef.current = await callFunc.openStream();
+            callFunc.playedStream(
+              "localVideoPlayer",
+              "localAudioPlayer",
+              streamRef.current
+            );
 
-          socket.emit("FETCH_ROOM_DATA", {});
-          socket.on("RESPONE_ROOM_DATA", (room) => {
-            localStorage.setItem("host", room);
-          });
-          setThisPeerId(peer.id);
-        });
+            //Listen to a  call and answer, sending stream
+            peer.on("call", (call) => {
+              call.answer(streamRef.current);
+              callFunc.playedStream(
+                "localVideoPlayer",
+                "localAudioPlayer",
+                streamRef.current
+              );
+              // call.on("stream", (remoteStream) => {
+              //   callFunc.playedStream("remotePlayer", remoteStream);
+              // });
+            });
 
-        socket.on("FETCH_ROOM_MEMBERS", (members) => {
-          setParticipant([...members]);
-          members.forEach((mem) => {
-            if (mem.peerId !== peer.id) {
-              console.log("joiner", mem.peerId);
-              let call = peer.call(mem.peerId, streamRef.current);
-              call.on("stream", (remoteStream) => {
-                callFunc.playedStream(
-                  `remotePlayer-${mem.peerId}`,
-                  remoteStream
-                );
-              });
-            }
-          });
-        });
+            socket.emit("JOIN_ROOM", {
+              roomId: room,
+              peerId: peer.id,
+              socketId: socket.id,
+              name: localStorage.getItem("user"),
+            });
 
-        //Listen to a  call and answer, sending stream
-        peer.on("call", (call) => {
-          callFunc.openStream().then((stream) => {
-            call.answer(stream);
-            callFunc.playedStream("userPlayer", stream);
-            call.on("stream", (remoteStream) => {
-              callFunc.playedStream("remotePlayer", remoteStream);
+            socket.emit("FETCH_ROOM_DATA", {});
+            socket.on("RESPONE_ROOM_DATA", (room) => {
+              localStorage.setItem("host", room);
             });
           });
-        });
 
-        //New user request
-        socket.on("ALERT_NEW_USER_RESQUEST", (user) => {
-          setShowModal(true);
-          setRequestor(user);
-        });
+          socket.on("FETCH_ROOM_MEMBERS", (members) => {
+            setParticipant([...members]);
+            members.forEach((mem) => {
+              if (mem.peerId !== peer.id) {
+                console.log("joiner", mem.peerId);
+                let call = peer.call(mem.peerId, streamRef.current);
+                call.on("stream", (remoteStream) => {
+                  callFunc.playedStream(
+                    `remoteVideoPlayer-${mem.peerId}`,
+                    `remoteAudioPlayer-${mem.peerId}`,
+                    remoteStream
+                  );
+                });
+              }
+            });
+          });
+
+          //New user request
+          socket.on("ALERT_NEW_USER_RESQUEST", (user) => {
+            setShowModal(true);
+            setRequestor(user);
+          });
+        }
       })();
+
+      console.log(props.dNone, participant.length);
+      if (!props.dNone && participant.length > 1) {
+        setSize({
+          height: 0.8,
+          width: 0.45,
+        });
+      } else if (props.dNone) {
+        setSize({
+          height: 0.2,
+          width: 0.14,
+        });
+      } else {
+        setSize({
+          height: 0.85,
+          width: 0.75,
+        });
+      }
     }
-  }, []);
+  }, [props, participant.length]);
 
   const handleClose = () => {
     setShowModal(false);
@@ -96,9 +127,11 @@ export default function CallScreen() {
     if (parti.peerId !== thisPeerId && parti.peerId !== null) {
       callEles.push(
         <CallElement
-          videoId={`remotePlayer-${parti.peerId}`}
-          name = {parti.name}
+          videoId={`remoteVideoPlayer-${parti.peerId}`}
+          audioId={`remoteAudioPlayer-${parti.peerId}`}
+          name={parti.name}
           key={parti.peerId}
+          size={size}
         />
       );
     }
@@ -118,8 +151,16 @@ export default function CallScreen() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div className={`d-flex justify-content-center align-item-center h-100`}>
-        <CallElement videoId={"userPlayer"} name={"You"}/>
+      <div
+        id="cal-video-cont"
+        className={`d-flex h-100 ${props.dNone ? `flex-column` : `flex-row`}`}
+      >
+        <CallElement
+          videoId={"localVideoPlayer"}
+          audioId={"localAudioPlayer"}
+          name={"You"}
+          size={size}
+        />
         {callEles}
       </div>
     </>

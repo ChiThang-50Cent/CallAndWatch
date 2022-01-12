@@ -20,6 +20,7 @@ export default function FilmScreen(props) {
       var firstScriptTag = document.getElementsByTagName("script")[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     }
+    setShow(props.dNone);
     if (props.dNone && !isHost) {
       socket.once("SYNC_VIDEO", (video) => {
         console.log(video);
@@ -72,15 +73,14 @@ export default function FilmScreen(props) {
             videoId: video.videoId,
             startSeconds: Math.ceil(video.currentTime),
           });
-        }
-        else if (video.videoState === 0) {
+        } else if (video.videoState === 0) {
           player.stopVideo();
-        } 
+        }
         // else if (video.videoState === 1) {
         //   player.playVideo();
         // } else if (video.videoState === 2) {
         //   player.pauseVideo();
-        // } 
+        // }
         else if (Math.abs(video.currentTime - localCurrentTime) >= 0.5) {
           player.seekTo(Math.ceil(video.currentTime));
           player.playVideo();
@@ -135,11 +135,44 @@ export default function FilmScreen(props) {
       >
         <i className="bi bi-three-dots-vertical"></i>
       </Button>
-      <Offcanvas show={show} onHide={handleClose} placement="end">
-        <Offcanvas.Header closeButton>
-          <div>
-            <input placeholder="search" id="videoSearch" />
-            <button onClick={handleSearch}>Search</button>
+      <Offcanvas
+        show={show}
+        onHide={handleClose}
+        placement="end"
+        className="film-offcanvas"
+      >
+        <Offcanvas.Header closeButton closeVariant="white">
+          <div className="d-flex justify-content-center align-items-center w-100">
+            {/* <div class="input-group w-75">
+              <input
+                class="form-control rounded-start h-90"
+                placeholder="Search"
+                id="videoSearch"
+              />
+              <button
+                onClick={handleSearch}
+                class="btn btn-outline-light h-90"
+                id="searchBtn"
+              >
+                Search
+              </button>             
+            </div> */}
+            <div class="input-group w-80">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search"
+                  id="videoSearch"
+                />
+                <button
+                  class="btn btn-outline-light"
+                  type="button"
+                  id="searchBtn"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
+              </div>
           </div>
         </Offcanvas.Header>
         <Offcanvas.Body>

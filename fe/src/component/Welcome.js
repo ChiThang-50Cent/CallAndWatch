@@ -41,10 +41,10 @@ export default function Welcome() {
   }, [navigate]);
 
   return (
-    <div>
+    <div className="h-100">
       <div className="wel-container">
-        <div className="wel-imgMAc">
-          <img className="wel-img" src="imgMAC.jpg" />
+        <div className="w-60">
+          <img className="h-100 w-100" src="imgMAC.jpg" alt="imgMAC-present" />
         </div>
         <div className="wel-content">
           <input
@@ -53,18 +53,17 @@ export default function Welcome() {
             className="wel-input"
           />
           <button
-            className="wel-top wel-left wel-button"
+            className="wel-button"
             onClick={handleCreate}
           >
             Create
           </button>
-          <br />
           <input
-            className="wel-top wel-input"
+            className=" wel-input"
             placeholder="Enter room code"
             id="inputRoomCode"
           />
-          <button className="wel-top wel-left wel-button" onClick={handleJoin}>
+          <button className="wel-button" onClick={handleJoin}>
             Join
           </button>
         </div>

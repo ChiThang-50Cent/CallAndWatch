@@ -5,15 +5,37 @@ iframe{
 
 #searchResults::-webkit-scrollbar {
     width: 6px;
-    background-color: #F5F5F5;
+    background-color: rgb(39 39 39);
 }
 
 #searchResults::-webkit-scrollbar-thumb {
-    background-color: #505050;
+    background-color: #888888;
     border-radius: 50px;
 }
 
 #searchResults::-webkit-scrollbar-track {
     box-shadow: inset 0 0 6px rgba(41, 40, 40, 0.3);
-    background-color: #F5F5F5;
+    background-color: rgb(39 39 39);
+    margin: 0.5rem;
+    border-radius: 50px;
 }
+
+.film-offcanvas {
+    background-color: rgb(39, 39, 39)!important;
+}
+
+.film-card {
+    background-color: #313131!important;
+}
+
+.film-card h6 {
+    color: white!important;
+}
+
+
+.film-card:hover {
+    background-color: rgb(60 60 60)!important;
+    transition: 0.4s;
+    cursor: pointer;
+}
+

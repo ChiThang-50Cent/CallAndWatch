@@ -2,14 +2,23 @@ import React from "react";
 import "./asset/css/Call.css";
 
 export default function CallElement(props) {
-
   return (
     <>
-      <div className="d-flex h-50 w-100 flex-column justify-content-center align-items-center ">
-        <div className="h-100 w-100 bg-light d-flex justify-content-center align-items-center">
-          <div className="position-relative">
+      <div className="d-flex w-100 flex-column justify-content-center align-items-center">
+        <div className="w-100 bg-dark d-flex justify-content-center">
+          <div className="position-relative cal-fit-cont">
             <p className="position-absolute call-p">{props.name}</p>
-            <video className="video_center" id={props.videoId}></video>
+            <video
+              className="cal-video-center"
+              id={props.videoId}
+              style={{
+                width : `calc((100vw + 2px)*${props.size.width})`,
+                height : `calc((100vh + 2px)*${props.size.height})`,
+              }}
+            ></video>
+            <audio
+              id={props.audioId} autoPlay
+            ></audio>
           </div>
         </div>
       </div>
