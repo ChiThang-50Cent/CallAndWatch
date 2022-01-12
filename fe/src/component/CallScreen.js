@@ -33,6 +33,7 @@ export default function CallScreen() {
             roomId: room,
             peerId: peer.id,
             socketId: socket.id,
+            name : localStorage.getItem("user")
           });
 
           socket.emit("FETCH_ROOM_DATA", {});
@@ -96,6 +97,7 @@ export default function CallScreen() {
       callEles.push(
         <CallElement
           videoId={`remotePlayer-${parti.peerId}`}
+          name = {parti.name}
           key={parti.peerId}
         />
       );
@@ -116,8 +118,8 @@ export default function CallScreen() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div className={`d-flex justify-content-center align-item-center`}>
-        <CallElement videoId={"userPlayer"} />
+      <div className={`d-flex justify-content-center align-item-center h-100`}>
+        <CallElement videoId={"userPlayer"} name={"You"}/>
         {callEles}
       </div>
     </>

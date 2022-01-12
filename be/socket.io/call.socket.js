@@ -50,6 +50,7 @@ const callSocketIo = (server) => {
           room.members.push({
             peerId: data.peerId,
             socketId: data.socketId,
+            name : data.name
           });
           io.to(data.roomId).emit("FETCH_ROOM_MEMBERS", room.members);
         }

@@ -1,9 +1,22 @@
-
 .video_center{
     height: 300px;
     width: 400px;
     object-fit: cover;
     padding: 8px;
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg); /* Firefox */
+}
+
+.call-p{
+    z-index: 1;
+    right: 2%;
+    bottom: 0;
+    margin: 0;
+    font-size: 120%;
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    font-family: cursive
 }
 
 
