@@ -1,8 +1,10 @@
-import React from 'react'
+import React, {useState} from 'react'
 import CallScreen from './CallScreen'
 import FilmScreen from './FilmScreen'
 import MusicScreen from './MusicScreen'
 export default function MainScreen() {
+
+    const [isClickFilm, setIsClickFilm] = useState(false)
 
     const clickFilmbtn = () => {
         let callNode = document.getElementById('callScreen').classList
@@ -12,6 +14,8 @@ export default function MainScreen() {
         callNode.toggle('w-15')
         filmNode.toggle('w-85')
         filmNode.toggle('d-none')
+
+        setIsClickFilm(!filmNode.contains('d-none'))
     }
 
     return (
@@ -22,7 +26,7 @@ export default function MainScreen() {
                         <div  className='h-100 w-100'><CallScreen /></div>
                     </div>
                     <div id="filmScreen" className="d-none h-100">
-                        <div className='h-100'><FilmScreen /></div>
+                        <div className='h-100'><FilmScreen dNone={isClickFilm} /></div>
                     </div>
                     <div id="musicScreen" className='d-none' >
                         <div ><MusicScreen /></div>

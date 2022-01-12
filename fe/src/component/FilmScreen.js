@@ -4,14 +4,14 @@ import { Offcanvas, Button } from "react-bootstrap";
 import "./asset/css/Film.css";
 import socket from "./socketio";
 
-export default function FilmScreen() {
+export default function FilmScreen(props) {
   const [listVideo, setListVideo] = useState([]);
   const [show, setShow] = useState(false);
 
   let func = useRef({});
   let results;
   let isHost = localStorage.getItem("host") === socket.id;
-  
+
   useEffect(() => {
     if (!window.YT) {
       var tag = document.createElement("script");
@@ -20,9 +20,15 @@ export default function FilmScreen() {
       var firstScriptTag = document.getElementsByTagName("script")[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     }
-  }, []);
+    if (props.dNone && !isHost) {
+      socket.once("SYNC_VIDEO", (video) => {
+        console.log(video);
+        loadVideo(video.videoId, video.currentTime);
+      });
+    }
+  }, [props]);
 
-  const loadVideo = (videoId) => {
+  const loadVideo = (videoId, startTime = 0) => {
     const videoPlayer = document.getElementById("videoPlayer").nodeName;
     if (videoPlayer !== "IFRAME") {
       let player = new window.YT.Player("videoPlayer", {
@@ -31,13 +37,14 @@ export default function FilmScreen() {
           playsinline: 1,
           autoplay: 1,
           controls: 1,
+          start: Math.ceil(startTime),
         },
         events: {
           onReady: onPlayerReady,
         },
       });
     } else {
-      func.current.loadVideoById(videoId, 0);
+      func.current.loadVideoById(videoId);
     }
   };
 
@@ -46,13 +53,42 @@ export default function FilmScreen() {
     player.playVideo();
     if (isHost) {
       console.log("Host here");
-    }
-    // setInterval(() => {
-    // //   console.log(event.target.getCurrentTime());
-    // //   console.log(event.target)
+      setInterval(() => {
+        socket.emit("SYNC_VIDEO", {
+          videoId: player.playerInfo.videoData.video_id,
+          currentTime: player.getCurrentTime(),
+          videoState: player.getPlayerState(),
+        });
+      }, 1000);
+    } else {
+      console.log("recived");
 
-    // }, 2000);
-    function loadVideoById(videoId, startTime) {
+      socket.on("SYNC_VIDEO", (video) => {
+        const localVideoId = player.playerInfo.videoData.video_id;
+        const localCurrentTime = player.getCurrentTime();
+
+        if (video.videoId !== localVideoId) {
+          player.loadVideoById({
+            videoId: video.videoId,
+            startSeconds: Math.ceil(video.currentTime),
+          });
+        }
+        else if (video.videoState === 0) {
+          player.stopVideo();
+        } 
+        // else if (video.videoState === 1) {
+        //   player.playVideo();
+        // } else if (video.videoState === 2) {
+        //   player.pauseVideo();
+        // } 
+        else if (Math.abs(video.currentTime - localCurrentTime) >= 0.5) {
+          player.seekTo(Math.ceil(video.currentTime));
+          player.playVideo();
+        }
+      });
+    }
+
+    function loadVideoById(videoId, startTime = 0) {
       player.loadVideoById({
         videoId: videoId,
         startSeconds: startTime,

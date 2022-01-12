@@ -58,12 +58,15 @@ const callSocketIo = (server) => {
       socket.on("FETCH_ROOM_DATA", () => {
         try {
           const room = rooms.find((room) => room.roomId === socket.roomId);
-          const joiner = room.members[0];
-          socket.emit("RESPONE_ROOM_DATA", joiner.socketId);
+          socket.emit("RESPONE_ROOM_DATA", room.id);
         } catch (error) {
           console.log(error.message);
         }
       });
+    });
+
+    socket.on("SYNC_VIDEO", (video) => {
+      io.to(socket.roomId).emit("SYNC_VIDEO", video);
     });
 
     socket.on("disconnect", () => {
@@ -74,6 +77,14 @@ const callSocketIo = (server) => {
           (user) => user.socketId === socket.id
         );
         room.members.splice(index, 1);
+        if (socket.id === room.id) {
+          rooms.forEach(r => {
+            if(r.id === socket.id && r.members.length){
+              r.id = r.members[0].socketId
+              console.log(r)
+            }
+          })
+        }
         io.to(socket.roomId).emit("FETCH_ROOM_MEMBERS", room.members);
         if (room.members.length) {
           io.to(socket.roomId).emit(
