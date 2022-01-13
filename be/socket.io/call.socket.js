@@ -21,8 +21,12 @@ const callSocketIo = (server) => {
 
     socket.on("NEW_USER_REQUEST", (user) => {
       const room = rooms.find((room) => room.roomId === user.requestRoom);
-      socket.to(room.id).emit("ALERT_NEW_USER_RESQUEST", user);
-
+      if(room){
+        socket.to(room.id).emit("ALERT_NEW_USER_RESQUEST", user);
+      } else {
+        socket.emit("RESPONE_TO_REQUESTOR", {status : "Room not found"})
+        console.log("Room not found")
+      }
       console.log("request", user);
     });
 
@@ -40,6 +44,7 @@ const callSocketIo = (server) => {
         name: user.username,
         isAllow: false,
       });
+      socket.to(user.id).emit("RESPONE_TO_REQUESTOR", {status : "You are not allowed"})
     });
 
     socket.on("JOIN_ROOM", (data) => {

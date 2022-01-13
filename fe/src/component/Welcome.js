@@ -38,6 +38,9 @@ export default function Welcome() {
         navigate(res.roomId);
       }
     });
+    socket.on("RESPONE_TO_REQUESTOR",(data)=>{
+      alert(data.status)
+    })
   }, [navigate]);
 
   return (

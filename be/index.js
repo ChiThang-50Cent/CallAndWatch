@@ -10,11 +10,14 @@ app.use(cors({
     origin : "*"
 }))
 app.use(express.json())
+app.get("/", (req, res)=>{
+    res.send("HI")
+})
 app.use('/search', YoutubeAPI)
 
 
 callSocketIo(server)
 
-server.listen(5000, ()=>{
+server.listen(process.env.PORT || 5000, ()=>{
     console.log("Start Listenning")
 })

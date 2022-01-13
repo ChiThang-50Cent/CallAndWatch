@@ -35,7 +35,7 @@ export default function CallScreen(props) {
             streamRef.current = await callFunc.openStream();
             callFunc.playedStream(
               "localVideoPlayer",
-              "localAudioPlayer",
+              
               streamRef.current
             );
 
@@ -44,7 +44,7 @@ export default function CallScreen(props) {
               call.answer(streamRef.current);
               callFunc.playedStream(
                 "localVideoPlayer",
-                "localAudioPlayer",
+          
                 streamRef.current
               );
               // call.on("stream", (remoteStream) => {
@@ -74,7 +74,6 @@ export default function CallScreen(props) {
                 call.on("stream", (remoteStream) => {
                   callFunc.playedStream(
                     `remoteVideoPlayer-${mem.peerId}`,
-                    `remoteAudioPlayer-${mem.peerId}`,
                     remoteStream
                   );
                 });
@@ -128,7 +127,6 @@ export default function CallScreen(props) {
       callEles.push(
         <CallElement
           videoId={`remoteVideoPlayer-${parti.peerId}`}
-          audioId={`remoteAudioPlayer-${parti.peerId}`}
           name={parti.name}
           key={parti.peerId}
           size={size}
@@ -157,7 +155,6 @@ export default function CallScreen(props) {
       >
         <CallElement
           videoId={"localVideoPlayer"}
-          audioId={"localAudioPlayer"}
           name={"You"}
           size={size}
         />

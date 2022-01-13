@@ -2,7 +2,7 @@ const callFunc = {};
 
 callFunc.openStream = async () => {
   const config = { 
-    audio: true, 
+    audio: false, 
     video: true
   };
   let stream = null;
@@ -14,14 +14,11 @@ callFunc.openStream = async () => {
   } 
 };
 
-callFunc.playedStream = (idVideoNode,idAudioNode, stream) => {
+callFunc.playedStream = (idVideoNode, stream) => {
   const video = document.getElementById(idVideoNode);
-  const audio = document.getElementById(idAudioNode)
-  if (video && audio) {
+  if (video) {
     video.srcObject = stream;
-    audio.srcObject = stream;
     let playVideoPromise = video.play();
-    let playAudioPromise = audio.play();
     if (playVideoPromise !== undefined) {
       playVideoPromise
         .then((_) => {})
@@ -29,13 +26,7 @@ callFunc.playedStream = (idVideoNode,idAudioNode, stream) => {
           console.log(err.message);
         });
     }
-    if (playAudioPromise !== undefined) {
-      playAudioPromise
-        .then((_) => {})
-        .catch((err) => {
-          console.log(err.message);
-        });
-    }
+
   }
 };
 

@@ -15,10 +15,8 @@ export default function CallElement(props) {
                 width : `calc((100vw + 2px)*${props.size.width})`,
                 height : `calc((100vh + 2px)*${props.size.height})`,
               }}
+              muted="muted"
             ></video>
-            <audio
-              id={props.audioId} autoPlay
-            ></audio>
           </div>
         </div>
       </div>
