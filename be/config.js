@@ -1,3 +1,3 @@
-const YoutubeAPIKey = "AIzaSyCBf2iYGmEHeNSPPIcPZ2ZVo6a2kC770X8"
+const YoutubeAPIKey = ""
 
 module.exports = {YoutubeAPIKey}
