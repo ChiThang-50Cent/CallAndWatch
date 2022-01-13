@@ -7,6 +7,7 @@ import socket from "./socketio";
 export default function FilmScreen(props) {
   const [listVideo, setListVideo] = useState([]);
   const [show, setShow] = useState(false);
+  const [isStartVideo, setIsStartVideo] = useState(false)
 
   let func = useRef({});
   let results;
@@ -26,7 +27,14 @@ export default function FilmScreen(props) {
         loadVideo(video.videoId, video.currentTime);
       });
     }
-  }, [props]);
+    if (isStartVideo) {
+      if (!isHost) {
+        func.current.onSyncTime();
+      } else {
+        func.current.emitSyncTime();
+      }
+    }
+  }, [props, isStartVideo]);
 
   const loadVideo = (videoId, startTime = 0) => {
     const videoPlayer = document.getElementById("videoPlayer").nodeName;
@@ -51,8 +59,10 @@ export default function FilmScreen(props) {
   const onPlayerReady = (event) => {
     let player = event.target;
     player.playVideo();
-    if (isHost) {
-      console.log("Host here");
+    setIsStartVideo(true)
+
+    function emitSyncTime() {
+      console.log("Host emit");
       setInterval(() => {
         socket.emit("SYNC_VIDEO", {
           videoId: player.playerInfo.videoData.video_id,
@@ -60,8 +70,9 @@ export default function FilmScreen(props) {
           videoState: player.getPlayerState(),
         });
       }, 1000);
-    } else {
-      console.log("recived");
+    }
+    function onSyncTime() {
+      console.log("joiner recived");
 
       socket.on("SYNC_VIDEO", (video) => {
         const localVideoId = player.playerInfo.videoData.video_id;
@@ -77,30 +88,34 @@ export default function FilmScreen(props) {
         }
         // else if (video.videoState === 1) {
         //   player.playVideo();
-        // } 
+        // }
         else if (video.videoState === 2) {
           player.pauseVideo();
-        }
-        else if (Math.abs(video.currentTime - localCurrentTime) >= 0.5 && video.videoState === 1) {
+        } else if (
+          Math.abs(video.currentTime - localCurrentTime) >= 0.5 &&
+          video.videoState === 1
+        ) {
           player.seekTo(Math.ceil(video.currentTime));
           player.playVideo();
         }
       });
     }
-
     function loadVideoById(videoId, startTime = 0) {
       player.loadVideoById({
         videoId: videoId,
         startSeconds: startTime,
       });
     }
+
+    func.current.emitSyncTime = emitSyncTime;
+    func.current.onSyncTime = onSyncTime;
     func.current.loadVideoById = loadVideoById;
   };
 
   const handleSearch = () => {
     const q = document.getElementById("videoSearch").value;
-    const baseUrl = "https://mac-hill.herokuapp.com/"
-    //const baseUrl = "http://localhost:5000/"
+    //const baseUrl = "https://mac-hill.herokuapp.com/"
+    const baseUrl = "http://localhost:5000/";
     fetch(`${baseUrl}search?q=${q}`)
       .then((data) => {
         return data.json();
@@ -145,22 +160,22 @@ export default function FilmScreen(props) {
       >
         <Offcanvas.Header closeButton closeVariant="white">
           <div className="d-flex justify-content-center align-items-center w-100">
-            <div class="input-group w-80">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Search"
-                  id="videoSearch"
-                />
-                <button
-                  class="btn btn-outline-light"
-                  type="button"
-                  id="searchBtn"
-                  onClick={handleSearch}
-                >
-                  Search
-                </button>
-              </div>
+            <div className="input-group w-80">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search"
+                id="videoSearch"
+              />
+              <button
+                className="btn btn-outline-light"
+                type="button"
+                id="searchBtn"
+                onClick={handleSearch}
+              >
+                Search
+              </button>
+            </div>
           </div>
         </Offcanvas.Header>
         <Offcanvas.Body>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
+import { validate as uuidValidate } from "uuid";
 import Peer from "peerjs";
 import CallElement from "./CallElement";
 import callFunc from "./call/webRTC";
@@ -21,8 +22,12 @@ export default function CallScreen(props) {
   });
 
   const streamRef = useRef(null);
+  const peerRef = useRef(null)
 
   useEffect(() => {
+    if (!uuidValidate(room)) {
+      navigate("/");
+    }
     if (!localStorage.getItem("user")) {
       navigate("/");
     } else {
@@ -32,10 +37,11 @@ export default function CallScreen(props) {
             console.log("peerid:", peer.id);
             setThisPeerId(peer.id);
 
+            peerRef.current = peer
+
             streamRef.current = await callFunc.openStream();
             callFunc.playedStream(
               "localVideoPlayer",
-              
               streamRef.current
             );
 
@@ -44,7 +50,7 @@ export default function CallScreen(props) {
               call.answer(streamRef.current);
               callFunc.playedStream(
                 "localVideoPlayer",
-          
+
                 streamRef.current
               );
               // call.on("stream", (remoteStream) => {
@@ -86,10 +92,13 @@ export default function CallScreen(props) {
             setShowModal(true);
             setRequestor(user);
           });
+          
         }
       })();
-
-      console.log(props.dNone, participant.length);
+      if (props.endCall) {
+        socket.emit("LEAVING_ROOM", socket.id);
+      }
+      //console.log(props.dNone, participant.length);
       if (!props.dNone && participant.length > 1) {
         setSize({
           height: 0.8,
@@ -153,11 +162,7 @@ export default function CallScreen(props) {
         id="cal-video-cont"
         className={`d-flex h-100 ${props.dNone ? `flex-column` : `flex-row`}`}
       >
-        <CallElement
-          videoId={"localVideoPlayer"}
-          name={"You"}
-          size={size}
-        />
+        <CallElement videoId={"localVideoPlayer"} name={"You"} size={size} />
         {callEles}
       </div>
     </>

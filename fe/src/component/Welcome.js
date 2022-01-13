@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from "react-router-dom";
 import socket from "./socketio";
 import "./asset/css/Welcome.css";
@@ -7,7 +7,7 @@ export default function Welcome() {
   const navigate = useNavigate();
 
   const handleCreate = () => {
-    const roomId = nanoid(9);
+    const roomId = uuidv4();
     const name = document.getElementById("inputUsername").value;
     if (name) {
       localStorage.setItem("user", name);

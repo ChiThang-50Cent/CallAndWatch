@@ -1,12 +1,13 @@
 import React, {useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useParams} from 'react-router-dom'
 import CallScreen from './CallScreen'
 import FilmScreen from './FilmScreen'
 import MusicScreen from './MusicScreen'
 export default function MainScreen() {
 
     const [isClickFilm, setIsClickFilm] = useState(false)
-    const navigate = useNavigate()
+    const [isEndCall, setIsEndCall] = useState(false)
+    const {room} = useParams()
     const clickFilmbtn = () => {
         let callNode = document.getElementById('callScreen').classList
         let filmNode = document.getElementById('filmScreen').classList
@@ -32,9 +33,12 @@ export default function MainScreen() {
     }
 
     const handleHangout = () => {
-        localStorage.removeItem("user")
-        localStorage.removeItem("host")
-        navigate("/")
+        setIsEndCall(true)
+    }
+
+    const handleCopyRoomCode = () => {
+        navigator.clipboard.writeText(room)
+        alert("Room code has been coppied")
     }
 
 
@@ -43,7 +47,7 @@ export default function MainScreen() {
             <div className='d-flex w-100 flex-column h-100 container-fluid'>
                 <div className='d-flex flex-row p-2 h-100 w-100 justify-content-center align-items-center' id="callMain">
                     <div id="callScreen" className="h-100 w-100">
-                        <div  className='h-100 w-100'><CallScreen dNone={isClickFilm} /></div>
+                        <div  className='h-100 w-100'><CallScreen dNone={isClickFilm} endCall={isEndCall} /></div>
                     </div>
                     <div id="filmScreen" className="d-none h-100">
                         <div className='h-100'><FilmScreen dNone={isClickFilm} /></div>
@@ -57,7 +61,7 @@ export default function MainScreen() {
                         <button className='btn btn-light mx-2' onClick={toggleMute} id="muteBtn"><i className="bi bi-mic"></i></button>
                         <button className='btn btn-light mx-2' onClick={toggleVideo} id="offVideoBtn"><i className="bi bi-camera-video"></i></button>
                         <button className='btn btn-light mx-2' onClick={clickFilmbtn}><i className="bi bi-film"></i></button>
-                        <button className='btn btn-light mx-2'><i className="bi bi-music-note-beamed"></i></button>
+                        <button className='btn btn-light mx-2' onClick={handleCopyRoomCode}><i className="bi bi-person-plus"></i></button>
                         <button className='btn btn-danger mx-2' onClick={handleHangout}><i className="bi bi-telephone-x-fill"></i></button>
                     </div>
                 </div>

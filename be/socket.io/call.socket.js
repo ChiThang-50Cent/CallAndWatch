@@ -75,8 +75,13 @@ const callSocketIo = (server) => {
       io.to(socket.roomId).emit("SYNC_VIDEO", video);
     });
 
+    socket.on("LEAVING_ROOM",(id)=>{
+      socket.disconnect(true)
+    })
+
+
     socket.on("disconnect", () => {
-      //console.log("dis", socket.roomId)
+      console.log("dis", socket.roomId)
       try {
         const room = rooms.find((room) => room.roomId === socket.roomId);
         const index = room.members.findIndex(
@@ -87,12 +92,12 @@ const callSocketIo = (server) => {
           rooms.forEach(r => {
             if(r.id === socket.id && r.members.length){
               r.id = r.members[0].socketId
-              console.log(r)
-            }
+            } 
           })
         }
+
         io.to(socket.roomId).emit("FETCH_ROOM_MEMBERS", room.members);
-        if (room.members.length) {
+        if (room.members?.length) {
           io.to(socket.roomId).emit(
             "RESPONE_ROOM_DATA",
             room.members[0].socketId
